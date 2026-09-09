@@ -204,3 +204,7 @@ Desenvolvido por **Eduardo Neri** como projeto de estudo e portfólio.
 
 GitHub: <https://github.com/EduardoPSNeri>
 LinkedIn: <https://www.linkedin.com/in/eduardo-neri-96b3732a5/>
+
+## Status
+
+**Refatoração concluída — versão CLI pronta para portfólio.**
