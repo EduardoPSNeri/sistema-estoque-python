@@ -1,57 +1,79 @@
+import pytest
+
 from models.produto import Produto
 from services.estoque_service import (
-    cadastrar_produto,
     buscar_por_codigo,
+    buscar_por_nome,
+    cadastrar_produto,
+    editar_produto,
     excluir_produto,
 )
-from services.relatorios_service import produto_mais_caro
 
 
-def test_cadastrar_produto_com_codigo_unico():
+def test_cadastrar_produto():
     produtos = []
-    produto = Produto(1, "Teclado", 2, 100.0)
+    produto = Produto(1, "Teclado", 2, "100.00")
 
-    resultado = cadastrar_produto(produtos, produto)
+    cadastrar_produto(produtos, produto)
 
-    assert resultado is True
-    assert len(produtos) == 1
+    assert produtos == [produto]
 
 
 def test_nao_cadastra_codigo_duplicado():
-    produtos = [Produto(1, "Teclado", 2, 100.0)]
-    novo = Produto(1, "Mouse", 1, 50.0)
+    produtos = [Produto(1, "Teclado", 2, "100.00")]
 
-    resultado = cadastrar_produto(produtos, novo)
+    with pytest.raises(ValueError, match="Já existe"):
+        cadastrar_produto(produtos, Produto(1, "Mouse", 1, "50.00"))
 
-    assert resultado is False
     assert len(produtos) == 1
 
 
 def test_buscar_por_codigo():
-    produtos = [Produto(1, "Teclado", 2, 100.0)]
+    produto = Produto(1, "Teclado", 2, "100.00")
+    produtos = [produto]
 
-    resultado = buscar_por_codigo(produtos, 1)
+    assert buscar_por_codigo(produtos, 1) is produto
+    assert buscar_por_codigo(produtos, 99) is None
 
-    assert resultado is not None
-    assert resultado.nome == "Teclado"
+
+def test_buscar_por_nome_ignora_maiusculas_e_espacos():
+    produto = Produto(1, "Teclado Mecânico", 2, "100.00")
+    produtos = [produto]
+
+    assert buscar_por_nome(produtos, "  teclado mecânico  ") is produto
+
+
+def test_editar_produto():
+    produtos = [Produto(1, "Teclado", 2, "100.00")]
+
+    resultado = editar_produto(
+        produtos,
+        1,
+        nome="Teclado Pro",
+        quantidade=5,
+        preco="200.00",
+    )
+
+    assert resultado.nome == "Teclado Pro"
+    assert resultado.quantidade == 5
+    assert str(resultado.preco) == "200.00"
+
+
+def test_editar_produto_inexistente():
+    with pytest.raises(LookupError):
+        editar_produto([], 99, nome="Mouse")
 
 
 def test_excluir_produto():
-    produtos = [Produto(1, "Teclado", 2, 100.0)]
+    produto = Produto(1, "Teclado", 2, "100.00")
+    produtos = [produto]
 
-    resultado = excluir_produto(produtos, 1)
+    removido = excluir_produto(produtos, 1)
 
-    assert resultado is True
-    assert len(produtos) == 0
+    assert removido is produto
+    assert produtos == []
 
 
-def test_produto_mais_caro():
-    produtos = [
-        Produto(1, "Teclado", 2, 100.0),
-        Produto(2, "Monitor", 1, 900.0),
-    ]
-
-    resultado = produto_mais_caro(produtos)
-
-    assert resultado is not None
-    assert resultado.nome == "Monitor"
+def test_excluir_produto_inexistente():
+    with pytest.raises(LookupError):
+        excluir_produto([], 99)

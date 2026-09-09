@@ -1,167 +1,210 @@
 # Sistema de Controle de Estoque em Python
 
-Projeto desenvolvido com foco na prática de desenvolvimento back-end utilizando Python.
+Aplicação CLI desenvolvida em Python para gerenciamento de produtos em estoque, com persistência em JSON, regras de negócio separadas por camada e testes automatizados.
 
-Este sistema simula um controle de estoque completo via terminal (CLI), permitindo o gerenciamento de produtos com persistência de dados e aplicação de boas práticas de desenvolvimento.
-
----
-
-## Status do Projeto
-
- Em desenvolvimento ativo
- Projeto em evolução contínua
-
----
+O projeto foi refatorado com foco em **organização, legibilidade, validação de dados, persistência segura e boas práticas de desenvolvimento back-end**.
 
 ## Funcionalidades
 
-* Cadastro de produtos
-* Listagem de produtos
-* Busca por nome e código
-* Edição de produtos
-* Exclusão de produtos
+- Cadastro de produtos;
+- listagem ordenada por código;
+- busca por código;
+- busca por nome;
+- edição de produtos;
+- exclusão de produtos;
+- persistência automática em JSON após alterações;
+- carregamento dos dados ao iniciar o sistema.
 
 ### Relatórios
 
-* Produto mais caro
-* Produto com maior quantidade
-* Valor total em estoque
-* Total de itens
+- Produto mais caro;
+- produto com maior quantidade;
+- valor financeiro total do estoque;
+- quantidade total de itens armazenados.
 
- Persistência de dados utilizando JSON
+## Regras de negócio
 
----
+Cada produto possui:
 
-## Tecnologias utilizadas
+- código inteiro positivo e único;
+- nome obrigatório;
+- quantidade inteira maior ou igual a zero;
+- preço maior ou igual a zero.
 
-* Python 3
-* JSON (persistência de dados)
-* Pytest (testes automatizados)
+Valores monetários utilizam `Decimal`, evitando os problemas mais comuns de precisão associados a `float`.
 
- **Conceitos aplicados:**
-
-* Programação Orientada a Objetos (POO)
-* Separação de responsabilidades
-* Modularização de código
-* Validação de dados
-* Estrutura em camadas (models, services, utils)
-
----
-
-## Estrutura do projeto
+## Arquitetura
 
 ```text
 sistema-estoque-python/
 │
-├── models/            # Classes do sistema (Produto)
-├── services/          # Regras de negócio
-├── utils/             # Funções auxiliares (validações, inputs)
-├── tests/             # Testes automatizados
+├── models/
+│   ├── __init__.py
+│   └── produto.py
 │
-├── main.py            # Arquivo principal (menu e fluxo)
-├── requirements.txt   # Dependências do projeto
-├── .gitignore         # Arquivos ignorados pelo Git
-└── README.md          # Documentação do projeto
+├── services/
+│   ├── __init__.py
+│   ├── estoque_service.py
+│   └── relatorios_service.py
+│
+├── repositories/
+│   ├── __init__.py
+│   └── estoque_repository.py
+│
+├── utils/
+│   ├── __init__.py
+│   └── inputs.py
+│
+├── data/
+│   └── .gitkeep
+│
+├── tests/
+│   ├── test_produto.py
+│   ├── test_estoque_service.py
+│   ├── test_relatorios_service.py
+│   └── test_estoque_repository.py
+│
+├── main.py
+├── requirements.txt
+├── .gitignore
+└── README.md
 ```
 
----
+### Responsabilidade das camadas
 
-## Exemplo de uso
+**Model**
+: representa a entidade `Produto`, valida seus próprios dados e realiza serialização.
 
-```text
-=== SISTEMA DE CONTROLE DE ESTOQUE ===
+**Services**
+: concentram as regras de negócio de estoque e os cálculos dos relatórios.
 
-1 - Cadastrar produto
-2 - Listar produtos
-3 - Buscar produto
-4 - Editar produto
-5 - Excluir produto
-6 - Produto mais caro
-7 - Produto com maior quantidade
-8 - Valor total em estoque
-9 - Total de itens
-10 - Salvar e sair
+**Repository**
+: é responsável pela leitura e gravação do arquivo JSON.
 
-Escolha uma opção: 1
+**Utils**
+: reúne funções de entrada e validação utilizadas pela interface de terminal.
 
-Código: 1
-Nome: Teclado
-Quantidade: 10
-Preço: 100
+**main.py**
+: coordena o fluxo da aplicação e a interação com o usuário.
 
-Produto cadastrado com sucesso!
-```
+## Tecnologias
 
----
+- Python 3.10+
+- JSON
+- `decimal.Decimal`
+- `pathlib`
+- Pytest
+- Git / GitHub
 
-## Como executar o projeto
+Não há dependências de produção externas.
 
-1. Clone o repositório:
+## Como executar
+
+Clone o repositório:
 
 ```bash
-git clone https://github.com/rangervermellho/sistema-estoque-python.git
-```
-
-1. Acesse a pasta do projeto:
-
-```bash
+git clone https://github.com/EduardoPSNeri/sistema-estoque-python.git
 cd sistema-estoque-python
 ```
 
-1. Execute o sistema:
+Crie e ative um ambiente virtual.
 
-```bash
-python main.py
+### Windows / PowerShell
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 ```
 
----
+### Linux / macOS
 
-## Como rodar os testes
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
-Instale as dependências (caso necessário):
+Instale as dependências de desenvolvimento:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Execute os testes com:
+Execute:
 
 ```bash
-pytest
+python main.py
 ```
 
----
+## Testes
 
-## Objetivo do projeto
+Execute:
 
-Este projeto foi desenvolvido com o objetivo de evoluir habilidades em:
+```bash
+pytest -q
+```
 
-* Desenvolvimento back-end com Python
-* Programação Orientada a Objetos (POO)
-* Organização e modularização de código
-* Boas práticas de desenvolvimento
-* Escrita de testes automatizados
+A suíte cobre:
 
----
+- validações do model;
+- cadastro com código único;
+- bloqueio de código duplicado;
+- busca;
+- edição;
+- exclusão;
+- relatórios;
+- casos com estoque vazio;
+- persistência;
+- arquivo inexistente;
+- JSON inválido;
+- registro malformado.
 
-## Objetivo profissional
+## Persistência
 
-Este projeto faz parte da minha jornada de evolução como Desenvolvedor Python, com foco em aplicar boas práticas e me preparar para atuar profissionalmente na área.
+Os dados gerados pela aplicação são armazenados em:
 
----
+```text
+data/estoque.json
+```
 
-## Próximas melhorias
+Esse arquivo é criado automaticamente e está no `.gitignore`, portanto dados locais de teste não são enviados ao GitHub.
 
-* Implementação de interface gráfica ou API
-* Sistema de autenticação (login)
-* Integração com banco de dados
-* Melhor cobertura de testes
+A classe `EstoqueRepository` aceita um caminho alternativo, facilitando testes automatizados sem alterar dados reais.
 
----
+## Principais melhorias da refatoração
+
+- `Produto` deixou de fazer `print()` diretamente;
+- validações da entidade foram centralizadas;
+- preço passou a utilizar `Decimal`;
+- edição deixou de alterar atributos diretamente no `main.py`;
+- persistência foi movida para uma camada `repositories`;
+- caminho do JSON deixou de depender da pasta em que o terminal foi aberto;
+- erros de leitura e gravação passaram a ter tratamento explícito;
+- registros JSON inválidos são detectados;
+- operações de cadastro, edição e exclusão salvam automaticamente;
+- funções passaram a possuir responsabilidades mais claras;
+- suíte de testes foi ampliada;
+- `requirements.txt` foi reduzido apenas à dependência realmente utilizada;
+- README e links do repositório foram corrigidos.
+
+## Possíveis evoluções futuras
+
+Este projeto deve permanecer pequeno e focado em fundamentos de Python. Evoluções naturais, caso seja necessário criar uma segunda versão, seriam:
+
+- SQLite;
+- API REST com FastAPI;
+- paginação e filtros;
+- controle de entradas e saídas;
+- histórico de movimentações.
+
+Essas funcionalidades não são necessárias para o objetivo atual do projeto CLI.
 
 ## Autor
 
-Desenvolvido por Eduardo Neri
+Desenvolvido por **Eduardo Neri** como projeto de estudo e portfólio.
 
-🔗 LinkedIn: <https://www.linkedin.com/in/eduardo-neri-96b3732a5/>
-🔗 GitHub: <https://github.com/rangervermellho>
+GitHub: <https://github.com/EduardoPSNeri>
+LinkedIn: <https://www.linkedin.com/in/eduardo-neri-96b3732a5/>
+
+## Status
+
+**Refatoração concluída — versão CLI pronta para portfólio.**
